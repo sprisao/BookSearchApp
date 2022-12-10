@@ -67,4 +67,7 @@ dependencies {
     /*Add Coroutine */
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 
+    /*Add Coil*/
+    implementation 'io.coil-kt:coil:1.3.2'
+
 }

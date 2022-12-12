@@ -30,12 +30,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val bookSearchRepository = BookSearchRepositoryImpl()
-        val factory = BookSearchViewModelProviderFactory(bookSearchRepository)
+        val factory = BookSearchViewModelProviderFactory(bookSearchRepository, this)
         bookSearchViewModel = ViewModelProvider(this, factory)[BookSearchViewModel::class.java]
     }
 
     private fun setUpBottomNavigationView() {
-        binding.bottomNavigationView.setOnNavigationItemSelectedListener {
+        binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.fragment_search -> {
                     supportFragmentManager.beginTransaction().replace(R.id.frame_layout, SearchFragment())

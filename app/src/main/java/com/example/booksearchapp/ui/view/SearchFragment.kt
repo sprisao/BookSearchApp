@@ -9,7 +9,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.booksearchapp.MainActivity
 import com.example.booksearchapp.databinding.FragmentSearchBinding
 import com.example.booksearchapp.ui.adapter.BookSearchAdapter
 import com.example.booksearchapp.ui.viewmodel.BookSearchViewModel

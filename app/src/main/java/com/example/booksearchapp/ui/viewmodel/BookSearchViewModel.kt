@@ -10,10 +10,12 @@ class BookSearchViewModel(
     private val bookSearchRepository: BookSearchRepository, private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    //api
+    // api
+    // Expose screen UI state
     private val _searchResult = MutableLiveData<SearchResponse>()
     val searchResult: LiveData<SearchResponse> get() = _searchResult
 
+    // Handle business logic
     fun searchBooks(query: String) = viewModelScope.launch(Dispatchers.IO) {
         val response = bookSearchRepository.searchBooks(query, "accuracy", 1, 15)
         if (response.isSuccessful) {

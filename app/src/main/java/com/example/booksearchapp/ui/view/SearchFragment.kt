@@ -74,6 +74,8 @@ class SearchFragment : Fragment() {
                     val query = it.toString().trim()
                     if (query.isNotEmpty()) {
                         bookSearchViewModel.searchBooks(query)
+
+                        /*save query in savedstatehandler*/
                         bookSearchViewModel.query = query
                     }
                 }

@@ -28,7 +28,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val bookSearchRepository = BookSearchRepositoryImpl()
+
         val factory = BookSearchViewModelProviderFactory(bookSearchRepository, this)
+
+        /* ViewModel을 Activity위에 띄우기 위해 이 과정을 거치는 것.*/
         bookSearchViewModel = ViewModelProvider(this, factory)[BookSearchViewModel::class.java]
     }
 
@@ -57,4 +60,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }

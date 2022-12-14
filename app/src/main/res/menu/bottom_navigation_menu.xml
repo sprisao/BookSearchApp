@@ -8,14 +8,14 @@
 		android:icon="@drawable/ic_baseline_search_24"
 		/>
 	<item
-		android:id="@+id/fragment_setting"
-		android:title="@string/setting"
-		android:icon="@drawable/ic_baseline_settings_24"
-		/>
-	<item
 		android:id="@+id/fragment_favorite"
 		android:title="@string/favorite"
 		android:icon="@drawable/ic_baseline_favorite_24"
+		/>
+	<item
+		android:id="@+id/fragment_setting"
+		android:title="@string/setting"
+		android:icon="@drawable/ic_baseline_settings_24"
 		/>
 
 </menu>

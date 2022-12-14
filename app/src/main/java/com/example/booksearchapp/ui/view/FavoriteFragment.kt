@@ -58,7 +58,7 @@ class FavoriteFragment : Fragment() {
         }
         bookSearchAdapter.setOnItemClickListener {
             findNavController().navigate(
-                SearchFragmentDirections.actionFragmentSearchToFragmentBook(it)
+                FavoriteFragmentDirections.actionFragmentFavoriteToFragmentBook(it)
             )
         }
     }

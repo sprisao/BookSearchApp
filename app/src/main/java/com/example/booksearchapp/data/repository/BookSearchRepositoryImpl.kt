@@ -1,13 +1,24 @@
 package com.example.booksearchapp.data.repository
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.booksearchapp.data.api.RetrofitInstance.api
 import com.example.booksearchapp.data.db.BookSearchDatabase
 import com.example.booksearchapp.data.model.Book
 import com.example.booksearchapp.data.model.SearchResponse
+import com.example.booksearchapp.util.Sort
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import okio.IOException
 import retrofit2.Response
 
-class BookSearchRepositoryImpl(private val db: BookSearchDatabase) : BookSearchRepository {
+class BookSearchRepositoryImpl(
+    private val db: BookSearchDatabase,
+    private val dataStore: DataStore<androidx.datastore.preferences.core.Preferences>
+) : BookSearchRepository {
     override suspend fun searchBooks(
         query: String,
         sort: String,
@@ -27,5 +38,31 @@ class BookSearchRepositoryImpl(private val db: BookSearchDatabase) : BookSearchR
 
     override fun getFavoriteBooks(): Flow<List<Book>> {
         return db.bookSearchDao().getFavoriteBooks()
+    }
+
+    private object PreferencesKeys {
+        val SORT_MODE = stringPreferencesKey("sort_mode")
+    }
+
+    override suspend fun saveSortMode(mode: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SORT_MODE] = mode
+        }
+    }
+
+    override suspend fun getSortMode(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                    exception.printStackTrace()
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                val sortMode = preferences[PreferencesKeys.SORT_MODE] ?: Sort.ACCURACY.value
+                sortMode
+            }
     }
 }

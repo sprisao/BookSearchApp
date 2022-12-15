@@ -5,12 +5,15 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksearchapp.databinding.FragmentSearchBinding
+import com.example.booksearchapp.ui.adapter.BookSearchLoadStateAdapter
 import com.example.booksearchapp.ui.adapter.BookSearchPagingAdapter
 import com.example.booksearchapp.ui.viewmodel.BookSearchViewModel
 import com.example.booksearchapp.util.Constants.SEARCH_BOOKS_TIME_DELAY
@@ -41,6 +44,7 @@ class SearchFragment : Fragment() {
 
         setupRecyclerView()
         searchBooks()
+        setupLoadState()
 
 //        bookSearchViewModel.searchResult.observe(viewLifecycleOwner) { response ->
 //            val books = response.documents
@@ -66,7 +70,12 @@ class SearchFragment : Fragment() {
                     DividerItemDecoration.VERTICAL
                 )
             )
-            adapter = bookSearchAdapter
+
+//            adapter = bookSearchAdapter
+            adapter = bookSearchAdapter.withLoadStateFooter(
+                footer = BookSearchLoadStateAdapter { bookSearchAdapter::retry }
+            )
+
         }
         bookSearchAdapter.setOnItemClickListener {
             findNavController().navigate(
@@ -98,6 +107,33 @@ class SearchFragment : Fragment() {
             }
             startTime = endTime
         }
+    }
+
+    private fun setupLoadState() {
+        bookSearchAdapter.addLoadStateListener { combinedLoadState ->
+            val loadState = combinedLoadState.source
+            val isListEmpty =
+                bookSearchAdapter.itemCount < 1 && loadState.refresh is LoadState.NotLoading && loadState.append.endOfPaginationReached
+
+            binding.tvEmptylist.isVisible = isListEmpty
+            binding.rvSearchResult.isVisible = !isListEmpty
+            binding.progressBar.isVisible = loadState.refresh is LoadState.Loading
+
+
+            /* LoadStateFooter 적용 이후로 필요 없으므로 주석처리 */
+//            binding.btnRetry.isVisible =
+//                loadState.refresh is LoadState.Error || loadState.append is LoadState.Error || loadState.prepend is LoadState.Error
+//
+//            val errorState: LoadState.Error? =
+//                loadState.refresh as? LoadState.Error ?: loadState.append as? LoadState.Error
+//                ?: loadState.prepend as? LoadState.Error
+//            errorState?.let {
+//                Toast.makeText(requireContext(), it.error.message, Toast.LENGTH_SHORT).show()
+//            }
+        }
+//        binding.btnRetry.setOnClickListener {
+//            bookSearchAdapter.retry()
+//        }
     }
 
 

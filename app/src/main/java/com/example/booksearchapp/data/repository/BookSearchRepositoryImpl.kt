@@ -1,6 +1,7 @@
 package com.example.booksearchapp.data.repository
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -11,6 +12,7 @@ import com.example.booksearchapp.data.api.RetrofitInstance.api
 import com.example.booksearchapp.data.db.BookSearchDatabase
 import com.example.booksearchapp.data.model.Book
 import com.example.booksearchapp.data.model.SearchResponse
+import com.example.booksearchapp.data.repository.BookSearchRepositoryImpl.PreferencesKeys.CACHE_DELETE_MODE
 import com.example.booksearchapp.util.Constants.PAGING_SIZE
 import com.example.booksearchapp.util.Sort
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +45,7 @@ class BookSearchRepositoryImpl(
 
     private object PreferencesKeys {
         val SORT_MODE = stringPreferencesKey("sort_mode")
+        val CACHE_DELETE_MODE = booleanPreferencesKey("cache_delete_mode")
     }
 
     override suspend fun saveSortMode(mode: String) {
@@ -62,6 +65,25 @@ class BookSearchRepositoryImpl(
         }.map { preferences ->
             val sortMode = preferences[PreferencesKeys.SORT_MODE] ?: Sort.ACCURACY.value
             sortMode
+        }
+    }
+
+    override suspend fun saveCacheDeleteMode(mode: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.CACHE_DELETE_MODE] = mode
+        }
+    }
+
+    override suspend fun getCacheDeleteMode(): Flow<Boolean> {
+        return dataStore.data.catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+                exception.printStackTrace()
+            } else {
+                throw exception
+            }
+        }.map { preferences ->
+            preferences[CACHE_DELETE_MODE] ?: false
         }
     }
 

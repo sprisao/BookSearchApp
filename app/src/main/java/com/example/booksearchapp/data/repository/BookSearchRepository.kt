@@ -21,6 +21,10 @@ interface BookSearchRepository {
     suspend fun saveSortMode(mode: String)
     suspend fun getSortMode(): Flow<String>
 
+    suspend fun saveCacheDeleteMode(mode: Boolean)
+
+    suspend fun getCacheDeleteMode(): Flow<Boolean>
+
     // Paging
     fun getFavoriteBooksList(): Flow<PagingData<Book>>
 

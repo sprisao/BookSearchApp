@@ -1,6 +1,7 @@
 package com.example.booksearchapp.ui.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,7 @@ class SettingFragment : Fragment() {
 
         saveSettings()
         loadSettings()
+        showWorkStatus()
     }
 
     private fun saveSettings() {
@@ -47,6 +49,15 @@ class SettingFragment : Fragment() {
                 else -> return@setOnCheckedChangeListener
             }
             bookSearchViewModel.saveSortMode(value)
+        }
+
+        binding.swCacheDelete.setOnCheckedChangeListener { _, isChecked ->
+            bookSearchViewModel.saveCacheDeleteMode(isChecked)
+            if (isChecked) {
+                bookSearchViewModel.setWork()
+            } else {
+                bookSearchViewModel.deleteWork()
+            }
         }
     }
 
@@ -59,5 +70,20 @@ class SettingFragment : Fragment() {
             }
         }
 
+        lifecycleScope.launch {
+            val isChecked = bookSearchViewModel.getCacheDeleteMode()
+            binding.swCacheDelete.isChecked = isChecked
+        }
+    }
+
+    private fun showWorkStatus() {
+        bookSearchViewModel.getWorkStatus().observe(viewLifecycleOwner) { workInfo ->
+            Log.d("WorkManger", workInfo.toString())
+            if (workInfo.isEmpty()) {
+                binding.tvWorkStatus.text = "WorkManager is not running"
+            } else {
+                binding.tvWorkStatus.text = workInfo[0].state.toString()
+            }
+        }
     }
 }

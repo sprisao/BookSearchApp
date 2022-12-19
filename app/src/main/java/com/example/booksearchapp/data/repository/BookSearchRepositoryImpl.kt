@@ -8,7 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.booksearchapp.data.api.RetrofitInstance.api
+import com.example.booksearchapp.data.api.BookSearchApi
 import com.example.booksearchapp.data.db.BookSearchDatabase
 import com.example.booksearchapp.data.model.Book
 import com.example.booksearchapp.data.model.SearchResponse
@@ -20,10 +20,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import okio.IOException
 import retrofit2.Response
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BookSearchRepositoryImpl(
+@Singleton
+class BookSearchRepositoryImpl @Inject constructor(
     private val db: BookSearchDatabase,
-    private val dataStore: DataStore<androidx.datastore.preferences.core.Preferences>
+    private val dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
+    private val api: BookSearchApi
 ) : BookSearchRepository {
     override suspend fun searchBooks(
         query: String, sort: String, page: Int, size: Int
@@ -101,7 +105,7 @@ class BookSearchRepositoryImpl(
     }
 
     override fun searchBooksPaging(query: String, sort: String): Flow<PagingData<Book>> {
-        val pagingSourceFactory = { BookSearchPagingSource(query, sort) }
+        val pagingSourceFactory = { BookSearchPagingSource(api, query, sort) }
         return Pager(
             config = PagingConfig(
                 pageSize = PAGING_SIZE,

@@ -2,14 +2,18 @@ package com.example.booksearchapp.data.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.booksearchapp.data.api.RetrofitInstance.api
+import com.example.booksearchapp.data.api.BookSearchApi
 import com.example.booksearchapp.data.model.Book
 import com.example.booksearchapp.util.Constants.PAGING_SIZE
 import retrofit2.HttpException
 import java.io.IOException
 
 
-class BookSearchPagingSource(private val query: String, private val sort: String) :
+class BookSearchPagingSource(
+    private val api: BookSearchApi,
+    private val query: String,
+    private val sort: String
+) :
         PagingSource<Int, Book>() {
     override fun getRefreshKey(state: PagingState<Int, Book>): Int? {
         return state.anchorPosition?.let { anchorPosition ->

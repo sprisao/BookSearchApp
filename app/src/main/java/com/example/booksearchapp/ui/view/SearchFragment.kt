@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksearchapp.databinding.FragmentSearchBinding
 import com.example.booksearchapp.ui.adapter.BookSearchLoadStateAdapter
 import com.example.booksearchapp.ui.adapter.BookSearchPagingAdapter
-import com.example.booksearchapp.ui.viewmodel.BookSearchViewModel
+import com.example.booksearchapp.ui.viewmodel.SearchViewModel
 import com.example.booksearchapp.util.Constants.SEARCH_BOOKS_TIME_DELAY
 import com.example.booksearchapp.util.collectLatestStateFlow
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +27,9 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     //    private lateinit var bookSearchViewModel: BookSearchViewModel
-    private val bookSearchViewModel by activityViewModels<BookSearchViewModel>()
+//    private val bookSearchViewModel by activityViewModels<BookSearchViewModel>()
+    private val searchViewModel by viewModels<SearchViewModel>()
+
 //    private lateinit var bookSearchAdapter: BookSearchAdapter
 
     private lateinit var bookSearchAdapter: BookSearchPagingAdapter
@@ -53,7 +55,7 @@ class SearchFragment : Fragment() {
 //            val books = response.documents
 //            bookSearchAdapter.submitList(books)
 
-        collectLatestStateFlow(bookSearchViewModel.searchPagingResult) {
+        collectLatestStateFlow(searchViewModel.searchPagingResult) {
             bookSearchAdapter.submitData(it)
         }
 
@@ -92,7 +94,7 @@ class SearchFragment : Fragment() {
         var endTime: Long
 
         binding.etSearch.text =
-            Editable.Factory.getInstance().newEditable(bookSearchViewModel.query)
+            Editable.Factory.getInstance().newEditable(searchViewModel.query)
 
         binding.etSearch.addTextChangedListener { text: Editable? ->
             endTime = System.currentTimeMillis()
@@ -102,9 +104,9 @@ class SearchFragment : Fragment() {
                     if (query.isNotEmpty()) {
 //                        bookSearchViewModel.searchBooks(query)
 
-                        bookSearchViewModel.searchBooksPaging(query)
+                        searchViewModel.searchBooksPaging(query)
                         /*save query in savedstatehandler*/
-                        bookSearchViewModel.query = query
+                        searchViewModel.query = query
                     }
                 }
             }
